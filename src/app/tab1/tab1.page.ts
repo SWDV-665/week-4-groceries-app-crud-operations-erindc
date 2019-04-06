@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { GroceriesService } from '../groceries.service';
+import { InputDialogService } from '../input-dialog.service';
 
 @Component({
   selector: 'app-tab1',
@@ -7,71 +9,25 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page {
-  constructor(public alertController: AlertController) {}
+  constructor(public alertController: AlertController, public groceriesService: GroceriesService, public inputDialogService: InputDialogService) {}
 
   title = 'Grocery List';
 
-  items = [
-    {
-      name: 'Milk',
-      quantity: 2,
-    },
-    {
-      name: 'Bread',
-      quantity: 1,
-    },
-    {
-      name: 'Banana',
-      quantity: 4,
-    },
-    {
-      name: 'Sugar',
-      quantity: 1,
-    }
-  ];
+  loadItems() {
+    return this.groceriesService.getItems();
+  }
 
   removeItem(i: number) {
-    this.items.splice(i, 1)
+    this.groceriesService.removeItem(i);
   }
 
   addItem() {
-    this.showAddItemPrompt()
+    this.inputDialogService.showPrompt()
   }
 
-  async showAddItemPrompt() {
-    const addItemPrompt = await this.alertController.create({
-      header: 'Add grocery item',
-      inputs: [
-        {
-          name: 'name',
-          id: 'name',
-          type: 'text',
-          placeholder: 'Name'
-        },
-        {
-          name: 'quantity',
-          type: 'number',
-          id: 'quantity',
-          placeholder: 'Quantity'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: () => {
-            console.log('Confirm Cancel');
-          }
-        }, {
-          text: 'Ok',
-          handler: (data) => {
-            this.items.push(data);
-          }
-        }
-      ]
-    });
-
-    await addItemPrompt.present();
+  editItem(item: {name: string, quantity: number}, i: number) {
+    this.inputDialogService.showPrompt(item, i)
   }
 }
+
+
